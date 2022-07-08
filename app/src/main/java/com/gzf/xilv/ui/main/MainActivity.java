@@ -2,6 +2,8 @@ package com.gzf.xilv.ui.main;
 
 import android.Manifest;
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
@@ -129,7 +131,30 @@ public class MainActivity extends BaseMvpActivity<MainPresenter> implements Main
         }else if (view == binding.btnDeteteDevice){
             Log.e("TAG", "onMainClick: "+OBOX_Device );
 
-            OBOX_delete_Device(OBOX_Device);
+            try {
+                JSONObject jsonObject = new JSONObject(OBOX_Device);
+                new AlertDialog.Builder(MainActivity.this).setTitle("信息提示")//设置对话框标题
+
+                        .setMessage("是否删除"+jsonObject.getString("oboxName"))
+                        .setPositiveButton("是", new DialogInterface.OnClickListener() {//添加确定按钮
+
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {//确定按钮的响应事件，点击事件没写，自己添加
+                                OBOX_delete_Device(OBOX_Device);
+                            }
+                        }).setNegativeButton("否", new DialogInterface.OnClickListener() {//添加返回按钮
+
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {//响应事件，点击事件没写，自己添加
+
+                            }
+
+                        }).show();//在按键响应事件中显示此对话框
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+
         }
     }
     public void login()
@@ -329,7 +354,11 @@ public class MainActivity extends BaseMvpActivity<MainPresenter> implements Main
                                     Log.e("TAG", "run: "+result.getBody().toString() );
 
                                     sp1.edit().clear().commit();
-                                    Thread.sleep(100);
+                                    try {
+                                        Thread.sleep(100);
+                                    } catch (InterruptedException e) {
+                                        e.printStackTrace();
+                                    }
                                     getOboxList();
 
                                 })
